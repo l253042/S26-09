@@ -427,3 +427,30 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+x64/
+x86/
+Debug/
+Release/
+
+# Compiled files
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.exe
+*.log
+*.tlog
+*.recipe
+
+# Keep raylib and Graphics
+!raylib/
+!Graphics/
