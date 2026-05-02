@@ -16,6 +16,16 @@ void Laser::Draw() {
 	}
 }
 
+Rectangle Laser::getRect() {
+
+	Rectangle rect;
+	rect.x = position.x;
+	rect.y = position.y;
+	rect.width = 8;
+	rect.height = 8;
+	return rect;
+}
+
 void Laser::Update() {
 
 	position.y += speed;

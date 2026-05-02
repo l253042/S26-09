@@ -10,6 +10,7 @@ public:
 	void Draw();
 	void Update();
 	void Spawn();
+	Rectangle getRect();
 	bool alive;
 
 private:

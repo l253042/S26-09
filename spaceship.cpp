@@ -41,6 +41,12 @@ void Spaceship::FireLaser() {
 		lastFireTime = GetTime();
 	
 	}
+}
+
+Rectangle Spaceship::getRect() {
+
+
+	return{ position.x,position.y,float(image.width),float(image.height) };
 
 
 }
