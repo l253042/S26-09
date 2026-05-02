@@ -1,7 +1,8 @@
 #pragma once
 #include"spaceship.hpp"
 #include"obstacle.hpp"
-
+#include"alien.hpp"
+#include"mysteryship.hpp"
 
 class Game {
 
@@ -17,7 +18,19 @@ private:
 
 	Spaceship spaceship;
 	std::vector<Obstacle>CreateObstacles();
+	std::vector<Alien>CreateAliens();
+	void MoveAliens();
+	void MoveDownAliens(int distance);
+	void AlienShootLaser();
 	void DeleteInactiveLasers();
 	std::vector<Obstacle>obstacles;
+	std::vector<Alien>aliens;
+	int aliensDirection;
+	std::vector<Laser>alienLasers;
+	constexpr static float alienLaserShootInterval = 0.35;
+	float timeLastAlienFired;
+	MysteryShip mysteryship;
+	float mysteryShipSpawnInterval;
+	float timeLastSpawn;
 
 };

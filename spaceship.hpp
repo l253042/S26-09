@@ -19,7 +19,7 @@ public:
 	std::vector<Laser> lasers;
 
 private:
-	float scale = 0.12f;
+	float scale = 0.10f;
 	Texture2D image;
 	Vector2 position;
 	double lastFireTime;

@@ -10,7 +10,7 @@ int main() {
 
 	 InitWindow(windowWidth, windowHeight, "C++ Space Invaders");
 	 ChangeDirectory("x64/Debug");
-	 SetTargetFPS(120);
+	 SetTargetFPS(60);
 
 	 Game game;
 	 while (WindowShouldClose() == false) {
