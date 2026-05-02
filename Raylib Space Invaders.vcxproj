@@ -111,7 +111,7 @@
       <AdditionalDependencies>raylib.lib;winmm.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /E /Y "$(ProjectDir)Graphics\*" "$(OutDir)Graphics\"</Command>
+      <Command>if not exist "$(TargetDir)Graphics" mkdir "$(TargetDir)Graphics" &amp; xcopy /E /I /Y "$(ProjectDir)Graphics\*" "$(TargetDir)Graphics\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="alien.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="laser.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="spaceship.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="alien.hpp" />
     <ClInclude Include="block.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="laser.hpp" />

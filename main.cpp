@@ -1,6 +1,7 @@
 ﻿#include<raylib.h>
 #include"game.hpp"
 
+
 int main() {
 
 	int windowWidth = 800;
@@ -12,7 +13,6 @@ int main() {
 	 SetTargetFPS(120);
 
 	 Game game;
-
 	 while (WindowShouldClose() == false) {
 
 		 game.HandleInput();
