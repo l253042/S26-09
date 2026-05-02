@@ -14,6 +14,7 @@ public:
 	void Update();
 	void HandleInput();
 	bool run;
+	int lives;
 
 private:
 
@@ -26,6 +27,8 @@ private:
 	void CheckForCollisions();
 	void DeleteInactiveLasers();
 	void GameOver();
+	void Reset();
+	void InitGame();
 	std::vector<Obstacle>obstacles;
 	std::vector<Alien>aliens;
 	int aliensDirection;
@@ -35,6 +38,6 @@ private:
 	MysteryShip mysteryship;
 	float mysteryShipSpawnInterval;
 	float timeLastSpawn;
-	int lives;
+	
 
 };

@@ -4,14 +4,8 @@ using namespace std;
 
 Game::Game() {
 
-	obstacles = CreateObstacles();
-	aliens = CreateAliens();
-	aliensDirection = 1;
-	lives = 2;
-	run = true;
-	timeLastAlienFired = 0.0;
-	timeLastSpawn = 0.0;
-	mysteryShipSpawnInterval = GetRandomValue(10, 20);
+	
+	InitGame();
 }
 
 Game::~Game() {
@@ -45,6 +39,12 @@ void Game::Update() {
 		DeleteInactiveLasers();
 		mysteryship.Update();
 		CheckForCollisions();
+	}
+	else {
+		if (IsKeyDown(KEY_ENTER)) {
+			Reset();
+			InitGame();
+		}
 	}
 }
 
@@ -108,17 +108,18 @@ void Game::DeleteInactiveLasers() {
 
 std::vector<Obstacle> Game::CreateObstacles() {
 
+	std::vector<Obstacle> temp;
+
 	int obstacleWidth = Obstacle::grid[0].size() * 3;
-	float gap = (GetScreenWidth() - (4 * obstacleWidth)) / 5; 
-	//Creates equal spacing between obstacles 
+	float gap = (GetScreenWidth() - (4 * obstacleWidth)) / 5;
+
 	for (int i = 0; i < 4; i++) {
 		float offsetX = (i + 1) * gap + i * obstacleWidth;
-		obstacles.push_back(Obstacle({ offsetX,float(GetScreenHeight() - 100) }));
+		temp.push_back(Obstacle({ offsetX, float(GetScreenHeight() - 180) }));
 	}
-	return obstacles;
 
+	return temp;
 }
-
 std::vector<Alien> Game::CreateAliens() {
 
 	std::vector<Alien>aliens;
@@ -145,18 +146,19 @@ std::vector<Alien> Game::CreateAliens() {
 }
 
 void Game::MoveAliens() {
-
 	for (auto& alien : aliens) {
-
-		if (alien.position.x + alien.alienImages[alien.type - 1].width > GetScreenWidth()) {
+		if (alien.position.x + alien.alienImages[alien.type - 1].width > GetScreenWidth()-20) {
 			aliensDirection = -1;
 			MoveDownAliens(2);
+			break; 
 		}
-		if (alien.position.x < 0) {
+		if (alien.position.x <20) {
 			aliensDirection = 1;
 			MoveDownAliens(2);
+			break;  
 		}
-
+	}
+	for (auto& alien : aliens) {
 		alien.Update(aliensDirection);
 	}
 }
@@ -173,7 +175,7 @@ void Game::AlienShootLaser() {
 
 	double currentTime = GetTime();
 	if (currentTime - timeLastAlienFired >= alienLaserShootInterval && !aliens.empty()) {
-		int randomIndex = GetRandomValue(0, aliens.size() - 1);
+		int randomIndex = GetRandomValue(0, (int)aliens.size() - 1);
 		Alien& alien = aliens[randomIndex];
 	alienLasers.push_back(Laser({ alien.position.x + alien.alienImages[alien.type - 1].width / 2,
 						 alien.position.y + alien.alienImages[alien.type - 1].height }, 6));
@@ -194,11 +196,14 @@ void Game::CheckForCollisions() {
 			if (CheckCollisionRecs(it->getRect(), laser.getRect())) {
 				it = aliens.erase(it);
 				laser.active = false;
+				break;
 			}
 			else {
 				++it;
 			}
 		}
+		if (!laser.active)
+			continue;
 
 		for (auto& obstacle : obstacles) {
 			auto& blocks = obstacle.blocks;
@@ -206,17 +211,23 @@ void Game::CheckForCollisions() {
 				if (CheckCollisionRecs(it->getRect(), laser.getRect())) {
 					it = blocks.erase(it);
 					laser.active = false;
+					break;
 				}
 				else {
 					++it;
 				}
 			}
+			if (!laser.active)
+				break;
 		}
+
+		if (!laser.active)
+			continue;
+
 		if (CheckCollisionRecs(mysteryship.getRect(), laser.getRect())) {
 			mysteryship.alive = false;
 			laser.active = false;
 		}
-
 	}
 
 	// Alien Lasers
@@ -228,7 +239,11 @@ void Game::CheckForCollisions() {
 			if (lives == 0) {
 				GameOver();
 			}
+			break;
 		}
+		if (!laser.active) 
+			continue;
+
 		for (auto& obstacle : obstacles) {
 			auto& blocks = obstacle.blocks;
 			for (auto it = blocks.begin(); it != blocks.end(); ) {
@@ -266,5 +281,28 @@ void Game::CheckForCollisions() {
 void Game::GameOver() {
 
 	run = false;
+
+}
+
+void Game::InitGame() {
+
+	obstacles = CreateObstacles();
+	aliens = CreateAliens();
+	aliensDirection = 1;
+	lives = 2;
+	run = true;
+	timeLastAlienFired = GetTime();
+	timeLastSpawn = GetTime();
+	mysteryShipSpawnInterval = GetRandomValue(10, 20);
+	mysteryship.alive = false;
+
+}
+
+void Game::Reset() {
+
+	spaceship.Reset();
+	aliens.clear();
+	alienLasers.clear();
+	obstacles.clear();
 
 }
