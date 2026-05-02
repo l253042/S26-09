@@ -15,6 +15,9 @@ public:
 	void HandleInput();
 	bool run;
 	int lives;
+	int score;
+	int highscore;
+	Music music;
 
 private:
 
@@ -29,6 +32,9 @@ private:
 	void GameOver();
 	void Reset();
 	void InitGame();
+	void checkForHighscore();
+	void saveHighscoreToFile(int highscore);
+	int loadHighscoreFromFile();
 	std::vector<Obstacle>obstacles;
 	std::vector<Alien>aliens;
 	int aliensDirection;
@@ -38,6 +44,7 @@ private:
 	MysteryShip mysteryship;
 	float mysteryShipSpawnInterval;
 	float timeLastSpawn;
+	Sound explosionSound;
 	
 
 };

@@ -1,6 +1,12 @@
 ﻿#include<raylib.h>
 #include"game.hpp"
+#include<string>
 
+std::string FormatWithLeadingZeros(int number, int width) {
+	std::string numberText = std::to_string(number);
+	int leadingZeros = width- numberText.length();
+	return numberText = std::string(leadingZeros, '0') + numberText;
+}
 
 int main() {
 
@@ -10,6 +16,7 @@ int main() {
 	Color yellow = { 243,216,63,255 };
 
 	 InitWindow(windowWidth , windowHeight, "C++ Space Invaders");
+	 InitAudioDevice();
 	 ChangeDirectory("x64/Debug");
 
 	 Font font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
@@ -20,6 +27,7 @@ int main() {
 	 Game game;
 	 while (WindowShouldClose() == false) {
 
+		 UpdateMusicStream(game.music);
 		 game.HandleInput();
 		 game.Update();
 		 BeginDrawing();
@@ -37,15 +45,21 @@ int main() {
 			 DrawTextureV(spaceshipimage, { x,546 }, WHITE);
 			 x += 50;
 		 }
+		 DrawTextEx(font, "SCORE", { 50,15 }, 34, 2, yellow);
+		 std::string scoreText = FormatWithLeadingZeros(game.score, 5);
+		 DrawTextEx(font, scoreText.c_str(), { 50,40 }, 34, 2, yellow);
+
+		 DrawTextEx(font, "HIGH SCORE", { 570,15 }, 34, 2, yellow);
+		 std::string highscoreText = FormatWithLeadingZeros(game.highscore, 5);
+		 DrawTextEx(font, highscoreText.c_str(), { 655,40 }, 34, 2, yellow);
+
 		 game.Draw();	
 		 EndDrawing();
 
 	 }
 
 	 CloseWindow();
-
-
-
+	 CloseAudioDevice();
 
 
 

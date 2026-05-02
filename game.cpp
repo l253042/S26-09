@@ -1,16 +1,22 @@
 #include"game.hpp"
 #include<iostream>
+#include<fstream>
+
 using namespace std;
 
 Game::Game() {
 
-	
+	music = LoadMusicStream("Sounds/music.ogg");
+	explosionSound = LoadSound("Sounds/explosion.ogg");
+	PlayMusicStream(music);
 	InitGame();
 }
 
 Game::~Game() {
 
 	Alien::UnloadImages();
+	UnloadMusicStream(music);
+	UnloadSound(explosionSound);
 
 }
 void Game::Update() {
@@ -194,6 +200,19 @@ void Game::CheckForCollisions() {
 		auto it = aliens.begin();
 		while (it != aliens.end()) {
 			if (CheckCollisionRecs(it->getRect(), laser.getRect())) {
+
+				PlaySound(explosionSound);
+
+				if (it->type == 1) {
+					score += 100;
+				}
+				else if (it->type == 2) {
+					score += 200;
+				}
+				else if (it->type == 3) {
+					score += 300;
+				}
+				checkForHighscore();
 				it = aliens.erase(it);
 				laser.active = false;
 				break;
@@ -227,6 +246,9 @@ void Game::CheckForCollisions() {
 		if (CheckCollisionRecs(mysteryship.getRect(), laser.getRect())) {
 			mysteryship.alive = false;
 			laser.active = false;
+			score += 500;
+			checkForHighscore();
+			PlaySound(explosionSound);
 		}
 	}
 
@@ -290,6 +312,8 @@ void Game::InitGame() {
 	aliens = CreateAliens();
 	aliensDirection = 1;
 	lives = 2;
+	score = 0;
+	highscore = loadHighscoreFromFile();
 	run = true;
 	timeLastAlienFired = GetTime();
 	timeLastSpawn = GetTime();
@@ -305,4 +329,38 @@ void Game::Reset() {
 	alienLasers.clear();
 	obstacles.clear();
 
+}
+
+void Game::checkForHighscore() {
+
+	if (score > highscore) {
+		highscore = score;
+		saveHighscoreToFile(highscore);
+	}
+}
+
+void Game::saveHighscoreToFile(int highscore) {
+
+	std::ofstream highscoreFile("highscore.txt");
+	if (highscoreFile.is_open()) {
+		highscoreFile << highscore;
+		highscoreFile.close();
+	}
+	else {
+		std::cerr << "Failed to save highscore to file." << std::endl;
+	}
+}
+
+int Game::loadHighscoreFromFile() {
+
+	int loadedHighscore = 0;
+	std::ifstream highscoreFile("highscore.txt");
+	if (highscoreFile.is_open()) {
+		highscoreFile >> loadedHighscore;
+		highscoreFile.close();
+	}
+	else {
+		std::cerr << "Failed to load highscore from file." << std::endl;
+	}
+	return loadedHighscore;
 }
