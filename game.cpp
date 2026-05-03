@@ -1,6 +1,7 @@
 #include"game.hpp"
 #include<iostream>
 #include<fstream>
+#include<string>
 
 using namespace std;
 
@@ -8,6 +9,7 @@ Game::Game() {
 
 	music = LoadMusicStream("Sounds/music.ogg");
 	explosionSound = LoadSound("Sounds/explosion.ogg");
+	spaceshipExplosion = LoadSound("Sounds/spaceshipsound4.mp3");
 	PlayMusicStream(music);
 	InitGame();
 }
@@ -17,15 +19,27 @@ Game::~Game() {
 	Alien::UnloadImages();
 	UnloadMusicStream(music);
 	UnloadSound(explosionSound);
-
+	UnloadSound(spaceshipExplosion);
 }
 void Game::Update() {
-	
-	if (run) {
+
+	if (state == STARTING) {
+		if (IsKeyDown(KEY_ENTER)) {
+			state = RUNNING;
+			run = true;
+		}
+	}
+
+	if (state == RUNNING && IsKeyPressed(KEY_P)) {
+		state = PAUSED;
+	}
+	else if (state == PAUSED && IsKeyPressed(KEY_P)) {
+		state = RUNNING;
+	}
+	else if (state == RUNNING) {
 
 		double currentTime = GetTime();
 		if (currentTime - timeLastSpawn > mysteryShipSpawnInterval) {
-
 			mysteryship.Spawn();
 			timeLastSpawn = GetTime();
 			mysteryShipSpawnInterval = GetRandomValue(10, 20);
@@ -40,13 +54,56 @@ void Game::Update() {
 		for (auto& laser : alienLasers) {
 			laser.Update();
 		}
-
-
 		DeleteInactiveLasers();
 		mysteryship.Update();
 		CheckForCollisions();
+
+		for (auto& popup : scorePopups) {
+			if (GetTime() - popup.spawnTime >= 1.0f) {
+				popup.active = false;
+			}
+		}
+		for (auto it = scorePopups.begin(); it != scorePopups.end();) {
+			if (!it->active) {
+				it = scorePopups.erase(it);
+			}
+			else {
+				++it;
+			}
+		}
+
+		if (aliens.empty()) {
+			state = LEVELUP;
+			levelUpTime = GetTime();
+		}
+
 	}
-	else {
+	else if (state == LEVELUP) {
+		if (GetTime() - levelUpTime >= 3.0f) {
+			if (level >= 5) {
+				state = GAMECOMPLETED;
+				run = false;
+			}
+			else {
+				level++;
+				aliens = CreateAliens();
+				obstacles = CreateObstacles();
+				alienLaserShootInterval = max(0.1f, 0.35f - (level - 1) * 0.05f);
+				aliensDirection = 1;
+				timeLastAlienFired = GetTime();
+				timeLastSpawn = GetTime();
+				state = RUNNING;
+			}
+		}
+	}
+	else if (state == GAMEOVER) {
+		if (IsKeyDown(KEY_ENTER)) {
+			Reset();
+			InitGame();
+		}
+	}
+
+	else if (state == GAMECOMPLETED) {
 		if (IsKeyDown(KEY_ENTER)) {
 			Reset();
 			InitGame();
@@ -55,6 +112,11 @@ void Game::Update() {
 }
 
 void Game::Draw() {
+
+	if (state == STARTING || state == GAMEOVER || state == LEVELUP ||
+		state == GAMECOMPLETED || state == PAUSED)
+		return;
+
 	spaceship.Draw();
 
 	for (int i = 0; i < spaceship.lasers.size(); i++) {
@@ -73,6 +135,15 @@ void Game::Draw() {
 	}
 
 	mysteryship.Draw();
+
+	for (auto& popup : scorePopups) {
+		if (popup.active) {
+			float elapsed = GetTime() - popup.spawnTime;
+			Vector2 drawPos = { popup.position.x, popup.position.y - elapsed * 50 };
+			unsigned char alpha = (unsigned char)(255 * (1.0f - elapsed));
+			DrawText(popup.text.c_str(), drawPos.x, drawPos.y, 20, { 243, 216, 63, alpha });
+		}
+	}
 }
 
 void Game::HandleInput() {
@@ -165,7 +236,7 @@ void Game::MoveAliens() {
 		}
 	}
 	for (auto& alien : aliens) {
-		alien.Update(aliensDirection);
+		alien.Update(aliensDirection * (1 + (level - 1) * 0.5f));
 	}
 }
 
@@ -203,16 +274,26 @@ void Game::CheckForCollisions() {
 
 				PlaySound(explosionSound);
 
+				int points = 0;
 				if (it->type == 1) {
 					score += 100;
+					points = 100;
 				}
 				else if (it->type == 2) {
 					score += 200;
+					points = 200;
 				}
 				else if (it->type == 3) {
 					score += 300;
+					points = 300;
 				}
 				checkForHighscore();
+				ScorePopup popup;
+				popup.position = it->position;
+				popup.text = std::string("+") + std::to_string(points);
+				popup.spawnTime = (float)GetTime();
+				popup.active = true;
+				scorePopups.push_back(popup);
 				it = aliens.erase(it);
 				laser.active = false;
 				break;
@@ -255,8 +336,11 @@ void Game::CheckForCollisions() {
 	// Alien Lasers
 
 	for (auto& laser : alienLasers) {
-		if (CheckCollisionRecs(laser.getRect(), spaceship.getRect())) {
+		if (!spaceship.isHit && CheckCollisionRecs(laser.getRect(), spaceship.getRect())) {
 			laser.active = false;
+			PlaySound(spaceshipExplosion);
+			spaceship.isHit = true;
+			spaceship.hitTime = GetTime();
 			lives--;
 			if (lives == 0) {
 				GameOver();
@@ -303,23 +387,27 @@ void Game::CheckForCollisions() {
 void Game::GameOver() {
 
 	run = false;
+	state = GAMEOVER;
 
 }
 
 void Game::InitGame() {
-
 	obstacles = CreateObstacles();
 	aliens = CreateAliens();
 	aliensDirection = 1;
-	lives = 2;
+	lives = 3;
 	score = 0;
+	level = 1;           
+	levelUpTime = 0;     
+	alienLaserShootInterval = 0.35f;  
 	highscore = loadHighscoreFromFile();
 	run = true;
 	timeLastAlienFired = GetTime();
 	timeLastSpawn = GetTime();
 	mysteryShipSpawnInterval = GetRandomValue(10, 20);
 	mysteryship.alive = false;
-
+	state = STARTING;
+	run = false;
 }
 
 void Game::Reset() {
@@ -328,7 +416,7 @@ void Game::Reset() {
 	aliens.clear();
 	alienLasers.clear();
 	obstacles.clear();
-
+	scorePopups.clear();
 }
 
 void Game::checkForHighscore() {

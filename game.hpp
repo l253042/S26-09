@@ -1,4 +1,5 @@
 #pragma once
+#include<string>
 #include"spaceship.hpp"
 #include"obstacle.hpp"
 #include"alien.hpp"
@@ -14,6 +15,10 @@ public:
 	void Update();
 	void HandleInput();
 	bool run;
+	enum GameState { STARTING, RUNNING, PAUSED, GAMEOVER, LEVELUP, GAMECOMPLETED };
+	GameState state;
+	int level;
+	float levelUpTime;
 	int lives;
 	int score;
 	int highscore;
@@ -39,12 +44,20 @@ private:
 	std::vector<Alien>aliens;
 	int aliensDirection;
 	std::vector<Laser>alienLasers;
-	constexpr static float alienLaserShootInterval = 0.35;
+	float alienLaserShootInterval = 0.35;
 	float timeLastAlienFired;
 	MysteryShip mysteryship;
 	float mysteryShipSpawnInterval;
 	float timeLastSpawn;
 	Sound explosionSound;
+	Sound spaceshipExplosion;
+	struct ScorePopup {
+		Vector2 position;
+		std::string text;
+		float spawnTime;
+		bool active;
+	};
+	std::vector<ScorePopup> scorePopups;
 	
 
 };

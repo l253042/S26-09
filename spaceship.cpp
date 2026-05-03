@@ -7,6 +7,8 @@ Spaceship::Spaceship()
 	position.x = (GetScreenWidth() - image.width * scale) / 2;
 	position.y = (GetScreenHeight() - image.height * scale)-60;
 	lastFireTime = 0.0;
+	isHit = false;
+	hitTime = 0;
 	laserSound = LoadSound("Sounds/laser.ogg");
 };
 
@@ -18,8 +20,18 @@ Spaceship::~Spaceship() {
 }
 
 void Spaceship::Draw() {
-
-	DrawTextureEx(image, position, 0.0f, scale, WHITE);
+	
+	if (isHit) {
+		if ((int)(GetTime() * 10) % 2 == 0) {  
+			DrawTextureEx(image, position, 0.0f, scale, WHITE);
+		}
+		if (GetTime() - hitTime >= 2.0f) { 
+			isHit = false;
+		}
+	}
+	else {
+		DrawTextureEx(image, position, 0.0f, scale, WHITE);
+	}
 }
 
 void Spaceship::MoveLeft() {
@@ -57,4 +69,6 @@ void Spaceship::Reset() {
 	position.x = (GetScreenWidth() - image.width * scale) / 2.0f;
 	position.y = (GetScreenHeight() - image.height * scale)- 60;
 	lasers.clear();
+	isHit = false;
+	hitTime = 0;
 }

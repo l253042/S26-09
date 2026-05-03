@@ -19,6 +19,8 @@ public:
 	Rectangle getRect();
 	void Reset();
 	std::vector<Laser> lasers;
+	bool isHit;
+	float hitTime;
 
 private:
 	float scale = 0.10f;
