@@ -1,19 +1,20 @@
 #pragma once
 #include<string>
+#include"gameobject.hpp"
 #include"spaceship.hpp"
 #include"obstacle.hpp"
 #include"alien.hpp"
 #include"mysteryship.hpp"
 
-class Game {
+class Game : public GameObject {
 
 public:
 
 	Game();
 	~Game();
-	void Draw();
-	void Update();
-	void HandleInput();
+	void Draw() override;
+	void Update() override;
+	void HandleInput() override;
 	bool run;
 	enum GameState { STARTING, RUNNING, PAUSED, GAMEOVER, LEVELUP, GAMECOMPLETED };
 	GameState state;
@@ -51,6 +52,7 @@ private:
 	float timeLastSpawn;
 	Sound explosionSound;
 	Sound spaceshipExplosion;
+	Sound gameOverSound;
 	struct ScorePopup {
 		Vector2 position;
 		std::string text;
@@ -58,6 +60,4 @@ private:
 		bool active;
 	};
 	std::vector<ScorePopup> scorePopups;
-	
-
 };

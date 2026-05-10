@@ -2,13 +2,8 @@
 #include<iostream>
 using namespace std;
 
-Laser::Laser(Vector2 position, int speed){
 
-	this->position = position;
-	this->speed = speed;
-	active = true;
-
-}
+Laser::Laser(Vector2 position, int speed) : Projectile(position, speed) {}
 
 void Laser::Draw() {
 	if (active) {
@@ -30,7 +25,7 @@ void Laser::Update() {
 
 	position.y += speed;
 	if (active) {
-		if (position.y > GetScreenHeight() -50 || position.y < 50) {
+		if (position.y > GetScreenHeight() -50 || position.y < 75) {
 			active = false;
 		}
 

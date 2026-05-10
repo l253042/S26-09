@@ -122,10 +122,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\DELL\Downloads\Raylib Space Invaders\raylib\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\DELL\Downloads\Raylib Space Invaders\raylib\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>raylib.lib;winmm.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)
+
+</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -141,10 +146,13 @@
   <ItemGroup>
     <ClInclude Include="alien.hpp" />
     <ClInclude Include="block.hpp" />
+    <ClInclude Include="entity.hpp" />
     <ClInclude Include="game.hpp" />
+    <ClInclude Include="gameobject.hpp" />
     <ClInclude Include="laser.hpp" />
     <ClInclude Include="mysteryship.hpp" />
     <ClInclude Include="obstacle.hpp" />
+    <ClInclude Include="projectile.hpp" />
     <ClInclude Include="spaceship.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

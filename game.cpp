@@ -10,6 +10,7 @@ Game::Game() {
 	music = LoadMusicStream("Sounds/music.ogg");
 	explosionSound = LoadSound("Sounds/explosion.ogg");
 	spaceshipExplosion = LoadSound("Sounds/spaceshipsound4.mp3");
+	gameOverSound = LoadSound("Sounds/gameover2.mp3");
 	PlayMusicStream(music);
 	InitGame();
 }
@@ -20,6 +21,7 @@ Game::~Game() {
 	UnloadMusicStream(music);
 	UnloadSound(explosionSound);
 	UnloadSound(spaceshipExplosion);
+	UnloadSound(gameOverSound);
 }
 void Game::Update() {
 
@@ -325,7 +327,7 @@ void Game::CheckForCollisions() {
 			continue;
 
 		if (CheckCollisionRecs(mysteryship.getRect(), laser.getRect())) {
-			mysteryship.alive = false;
+			mysteryship.active = false;
 			laser.active = false;
 			score += 500;
 			checkForHighscore();
@@ -388,7 +390,8 @@ void Game::GameOver() {
 
 	run = false;
 	state = GAMEOVER;
-
+	PlaySound(gameOverSound);
+	StopMusicStream(music);
 }
 
 void Game::InitGame() {
@@ -405,9 +408,10 @@ void Game::InitGame() {
 	timeLastAlienFired = GetTime();
 	timeLastSpawn = GetTime();
 	mysteryShipSpawnInterval = GetRandomValue(10, 20);
-	mysteryship.alive = false;
+	mysteryship.active = false;
 	state = STARTING;
 	run = false;
+	PlayMusicStream(music);
 }
 
 void Game::Reset() {

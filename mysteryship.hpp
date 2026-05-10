@@ -1,24 +1,15 @@
 #pragma once
-#include <raylib.h>
+#include "entity.hpp"
 
-class MysteryShip {
-
+class MysteryShip : public Entity {
 public:
-
-	MysteryShip();
-	~MysteryShip();
-	void Draw();
-	void Update();
-	void Spawn();
-	Rectangle getRect();
-	bool alive;
-
+    MysteryShip();
+    ~MysteryShip();
+    void Draw() override;
+    void Update();
+    void Spawn();
+    Rectangle getRect() override;
 private:
-	Texture2D image;
-	Vector2 position;
-	int speed;
-
-
-
-
+    Texture2D image;  
+    int speed;
 };

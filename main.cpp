@@ -17,12 +17,16 @@ int main() {
 
 	 InitWindow(windowWidth , windowHeight, "C++ Space Invaders");
 	 InitAudioDevice();
+#ifdef _DEBUG
 	 ChangeDirectory("x64/Debug");
+#else
+	 ChangeDirectory("x64/Release");
+#endif
 
 	 Font font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
 	 Texture2D spaceshipimage = LoadTexture("Graphics/heart.png");
 
-	 SetTargetFPS(60);
+	 SetTargetFPS(30);
 
 	 Game game;
 	 while (WindowShouldClose() == false) {
@@ -75,11 +79,11 @@ int main() {
 		 else if (game.state == Game::GAMECOMPLETED) {
 			 Vector2 completedSize = MeasureTextEx(font, "YOU WIN!", 64, 2);
 			 Vector2 scoreSize = MeasureTextEx(font, "CONGRATULATIONS!", 64, 2);
-			 Vector2 restartSize = MeasureTextEx(font, "PRESS ENTER TO PLAY AGAIN", 64, 2);
+			 Vector2 restartSize = MeasureTextEx(font, "PRESS ENTER TO PLAY AGAIN", 34, 2);
 			 DrawTextEx(font, "YOU WIN!", { (800 - completedSize.x) / 2, 180 }, 64, 2, yellow);
 			 DrawTextEx(font, "CONGRATULATIONS!", { (800 - scoreSize.x) / 2, 260 }, 64, 2, yellow);
 			 if ((int)(GetTime() * 2) % 2 == 0) {
-				 DrawTextEx(font, "PRESS ENTER TO PLAY AGAIN", { (800 - restartSize.x) / 2, 340 }, 64, 2, yellow);
+				 DrawTextEx(font, "PRESS ENTER TO PLAY AGAIN", { (800 - restartSize.x) / 2, 340 }, 34, 2, yellow);
 			 }
 		 }
 

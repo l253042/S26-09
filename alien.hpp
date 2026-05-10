@@ -1,27 +1,15 @@
-#pragma once 
-#include<raylib.h>
+#pragma once
+#include "entity.hpp"
 
-class Alien {
+class Alien : public Entity {
 
 public:
-
-	Alien(int type, Vector2 position);
-	void Draw();
-	void Update(int direction);
-	int GetType();
-	Rectangle getRect();
-	static void UnloadImages();
-	static Texture2D alienImages[3];
-	Vector2 position;
-	int type;
-
-private:
-
-
-
-
-
-
-
-
+    Alien(int type, Vector2 position);
+    void Draw() override;
+    void Update(int direction);
+    int GetType();
+    Rectangle getRect() override;
+    static void UnloadImages();
+    static Texture2D alienImages[3];
+    int type;  
 };

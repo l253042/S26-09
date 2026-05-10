@@ -3,7 +3,7 @@
 MysteryShip::MysteryShip() {
 
 	image = LoadTexture("Graphics/mystery.png");
-	alive = false;
+	active = false;
 }
 
 MysteryShip::~MysteryShip() {
@@ -24,12 +24,12 @@ void MysteryShip::Spawn() {
 		position.x = GetScreenWidth() - image.width -25;
 		speed = -3;
 	}
-	alive = true;
+	active = true;
 }
 
 Rectangle MysteryShip::getRect() {
 
-	if (alive) {
+	if (active) {
 		return{ position.x,position.y,float(image.width),float(image.height) };
 	}
 	else {
@@ -40,17 +40,17 @@ Rectangle MysteryShip::getRect() {
 
 void MysteryShip::Update() {
 
-	if (alive) {
+	if (active) {
 		position.x += speed;
 		if (position.x > GetScreenWidth() - image.width -25 || position.x < 25) {
-			alive = false;
+			active = false;
 		}
 	}
 }
 
 void MysteryShip::Draw() {
 
-	if (alive) {
+	if (active) {
 		DrawTextureV(image, position, WHITE);
 	}
 
